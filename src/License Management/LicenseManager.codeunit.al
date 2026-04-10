@@ -5,8 +5,10 @@ codeunit 50200 "License Manager"
     var
         LicenseValid: Boolean;
         LastCheck: DateTime;
+        LicenseAPIClient: Codeunit "License API Client";
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    //[EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"Customer List", 'OnOpenPageEvent', '', false, false)]
     local procedure OnLogin()
     begin
         Message('Status %1', LicenseValid); //temp notification
@@ -16,8 +18,7 @@ codeunit 50200 "License Manager"
     local procedure CheckLicense(): Boolean
     begin
         if IsOlderThan24Hours(LastCheck) OR not LicenseValid then
-            //kald api her
-            exit(false) //temp
+            exit(LicenseAPIClient.GetLicenseStatus())
         else
             exit(LicenseValid);
     end;
