@@ -16,8 +16,9 @@ codeunit 50201 "License API Client"
         LicenseStatus: Text;
     begin
         RequestMessage.Method := 'GET';
-        RequestMessage.SetRequestUri('http://host.docker.internal:8080/api/Licenses');
+        //RequestMessage.SetRequestUri('http://host.docker.internal:8080/api/Licenses');
         //RequestMessage.SetRequestUri('https://jsonplaceholder.typicode.com/todos');
+        RequestMessage.SetRequestUri('https://satellite-production.up.railway.app/api/licenses'); // dummy api
 
         requestMessage.getHeaders(RequestHeaders);
 
@@ -33,12 +34,11 @@ codeunit 50201 "License API Client"
         if not JsonObj.ReadFrom(ResponseText) then
             Error('Invalid JSON response');
 
-        if JsonObj.Get('Status', JsonToken) then
+        if JsonObj.Get('status', JsonToken) then
             LicenseStatus := JsonToken.AsValue().AsText()
         else
-            Error('Field "Status" not found');
+            Error('Field "status" not found');
 
-        Message('License Status: %1', LicenseStatus);
 
         if LicenseStatus = 'Active' then
             exit(true)
