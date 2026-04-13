@@ -15,12 +15,14 @@ codeunit 50200 "License Manager"
         LicenseValid := CheckLicense();
     end;
 
-    local procedure CheckLicense(): Boolean
+    procedure CheckLicense(): Boolean
     begin
-        if IsOlderThan24Hours(LastCheck) OR not LicenseValid then
-            exit(LicenseAPIClient.GetLicenseStatus())
-        else
-            exit(LicenseValid);
+        if IsOlderThan24Hours(LastCheck) or not LicenseValid then begin
+            LicenseValid := LicenseAPIClient.GetLicenseStatus();
+            LastCheck := CurrentDateTime();
+        end;
+
+        exit(LicenseValid);
     end;
 
     local procedure IsOlderThan24Hours(LastCheck: DateTime): Boolean

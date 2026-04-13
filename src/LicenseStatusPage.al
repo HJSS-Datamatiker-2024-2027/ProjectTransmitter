@@ -26,7 +26,7 @@ page 50200 LicenseStatusPage
 
     trigger OnOpenPage()
     begin
-        if LicenseManager.IsLicenseValid() then
+        if LicenseManager.CheckLicense() then
             LicenseStatusTxt := 'Valid'
         else
             LicenseStatusTxt := 'Invalid';
