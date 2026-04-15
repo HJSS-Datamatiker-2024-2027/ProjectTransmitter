@@ -37,3 +37,29 @@ codeunit 50200 "License Manager"
         exit((CurrentDateTime() - LastCheck) > OneDay);
     end;
 }
+
+// codeunit 50200 "License Manager"
+// {
+//     SingleInstance = true;
+
+//     var
+//         LicenseValid: Boolean;
+//         LastCheck: DateTime;
+
+//     procedure IsLicenseValid(): Boolean
+//     begin
+//         exit(LicenseValid);
+//     end;
+
+//     procedure SetLicenseStatus(NewStatus: Boolean)
+//     begin
+//         LicenseValid := NewStatus;
+//         LastCheck := CurrentDateTime;
+//     end;
+
+//     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
+//     local procedure OnLogin()
+//     begin
+//         LicenseValid := true; // test
+//     end;
+// }
