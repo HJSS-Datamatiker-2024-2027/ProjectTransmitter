@@ -1,6 +1,6 @@
 codeunit 50201 "License API Client"
 {
-    procedure GetLicenseStatus(tenantId: Guid; extensionId: Integer): Boolean
+    procedure GetLicenseStatus(TenantId: Guid; ExtensionId: Guid): Text
     var
         Url: Text;
         Client: HttpClient;
@@ -17,7 +17,7 @@ codeunit 50201 "License API Client"
         LicenseStatus: Text;
     begin
         RequestMessage.Method := 'GET';
-        Url := StrSubstNo('https://projectdummysatellite-production.up.railway.app/api/licenses/%1?tenantId=%2', extensionId, tenantId);
+        Url := StrSubstNo('https://projectdummysatellite-production.up.railway.app/api/licenses/%1?tenantId=%2', ExtensionId, TenantId);
         RequestMessage.SetRequestUri(Url);
 
         if not Client.Send(RequestMessage, ResponseMessage) then
@@ -35,15 +35,10 @@ codeunit 50201 "License API Client"
         else
             Error('Field "status" not found');
 
-        Message(LicenseStatus);
-
-        if LicenseStatus = 'Active' then
-            exit(true)
-        else
-            exit(false);
+        exit(LicenseStatus);
     end;
 
-    procedure GetAllLicenses(tenantId: Guid)
+    procedure GetAllLicenses(TenantId: Guid)
     var
         Url: Text;
         Client: HttpClient;
@@ -58,14 +53,14 @@ codeunit 50201 "License API Client"
         Id: Integer;
         ReturnedTenantId: Guid; //Skal være Guid!!!
         CustomerName: Text;
-        ExtensionId: Integer;
+        ExtensionId: Guid;
         DateCreated: DateTime;
         ExpirationDate: DateTime;
         Status: Text;
 
     begin
         RequestMessage.Method := 'GET';
-        Url := StrSubstNo('https://projectdummysatellite-production.up.railway.app/api/licenses?tenantId=%1', tenantId);
+        Url := StrSubstNo('https://projectdummysatellite-production.up.railway.app/api/licenses?tenantId=%1', TenantId);
         RequestMessage.SetRequestUri(Url);
 
         if not Client.Send(RequestMessage, ResponseMessage) then
@@ -82,7 +77,7 @@ codeunit 50201 "License API Client"
             Id := JObject.SelectToken('id', JToken) ? JToken.AsValue().AsInteger() : -1;
             ReturnedTenantId := JObject.SelectToken('tenantId', JToken) ? JToken.AsValue.AsText() : '';
             CustomerName := JObject.SelectToken('customerName', JToken) ? JToken.AsValue.AsText() : '';
-            ExtensionId := JObject.SelectToken('extensionId', JToken) ? JToken.AsValue.AsInteger() : -1;
+            ExtensionId := JObject.SelectToken('extensionId', JToken) ? JToken.AsValue.AsText() : '';
             DateCreated := JObject.SelectToken('dateCreated', JToken) ? JToken.AsValue.AsDateTime() : CurrentDateTime();
             ExpirationDate := JObject.SelectToken('expirationDate', JToken) ? JTOken.AsValue.AsDateTime() : CurrentDateTime();
             Status := JObject.SelectToken('status', JToken) ? JToken.AsValue.AsText() : '';
@@ -91,12 +86,11 @@ codeunit 50201 "License API Client"
         end;
     end;
 
-    local procedure InsertLicense(id: Integer; TenantId: Guid; CustomerName: Text; ExtensionId: Integer; DateCreated: DateTime; ExpirationDate: DateTime; Status: Text)
+    local procedure InsertLicense(Id: Integer; TenantId: Guid; CustomerName: Text; ExtensionId: Guid; DateCreated: DateTime; ExpirationDate: DateTime; Status: Text)
     var
         License: Record "License";
     begin
         License.Init();
-        License.Id := Id;
         License."Tenant Id" := TenantId;
         License."Customer Name" := CustomerName;
         License."Extension Id" := ExtensionId;

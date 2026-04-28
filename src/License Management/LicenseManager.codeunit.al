@@ -3,30 +3,34 @@ codeunit 50200 "License Manager"
     SingleInstance = true;
 
     var
-        LicenseValid: Boolean;
-        LastCheck: DateTime;
         LicenseAPIClient: Codeunit "License API Client";
 
     //[EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
     [EventSubscriber(ObjectType::Page, Page::"Customer List", 'OnOpenPageEvent', '', false, false)]
     local procedure OnLogin()
     begin
-        Message('Status %1', LicenseValid); //temp notification
-        LicenseValid := CheckLicense();
-        LicenseAPIClient.GetLicenseStatus('1b81cb10-2baf-4ee4-a63e-f1603c774587', 2);
-
         //LicenseAPIClient.GetAllLicenses('1b81cb10-2baf-4ee4-a63e-f1603c774587');
+        CheckLicense('1b81cb10-2baf-4ee4-a63e-f1603c774587', '1b81cb10-2baf-4ee4-a63e-f1603c774581');
     end;
 
-    procedure CheckLicense(): Boolean
+    procedure CheckLicense(TenantId: Guid; ExtensionId: Guid): Boolean
+    var
+        License: Record "License";
+        LicenseCrypto: Codeunit "License Crypto";
     begin
-        if IsOlderThan24Hours(LastCheck) or not LicenseValid then begin
-            //LicenseValid := LicenseAPIClient.GetLicenseStatus();
-            LicenseValid := true;
-            LastCheck := CurrentDateTime();
-        end;
+        //Her mangler alle grace-checks!
+        License.Get(TenantId, ExtensionId);
 
-        exit(LicenseValid);
+        if not LicenseCrypto.VerifyHMAC(License) then
+            exit(false);
+
+        if LicenseAPIClient.GetLicenseStatus(TenantId, ExtensionId) = 'Active' then
+            exit(true);
+
+        if (License.Status = 'Active') and IsWithinGracePeriod(License."Expiration Date") then
+            exit(true);
+
+        exit(false);
     end;
 
     local procedure IsOlderThan24Hours(LastCheck: DateTime): Boolean
@@ -40,30 +44,12 @@ codeunit 50200 "License Manager"
 
         exit((CurrentDateTime() - LastCheck) > OneDay);
     end;
+
+    local procedure IsWithinGracePeriod(ExpirationDate: DateTime): Boolean
+    var
+        GracePeriodInDays: Integer;
+    begin
+        GracePeriodInDays := 7;
+        exit(CurrentDateTime() <= (ExpirationDate + (GracePeriodInDays * 24 * 60 * 60 * 1000)));
+    end;
 }
-
-// codeunit 50200 "License Manager"
-// {
-//     SingleInstance = true;
-
-//     var
-//         LicenseValid: Boolean;
-//         LastCheck: DateTime;
-
-//     procedure IsLicenseValid(): Boolean
-//     begin
-//         exit(LicenseValid);
-//     end;
-
-//     procedure SetLicenseStatus(NewStatus: Boolean)
-//     begin
-//         LicenseValid := NewStatus;
-//         LastCheck := CurrentDateTime;
-//     end;
-
-//     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
-//     local procedure OnLogin()
-//     begin
-//         LicenseValid := true; // test
-//     end;
-// }

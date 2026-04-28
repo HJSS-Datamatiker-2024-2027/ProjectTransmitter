@@ -5,40 +5,57 @@ table 50200 License
 
     fields
     {
-        field(1; Id; Integer)
-        {
-            Caption = 'Id';
-        }
-        field(2; "Tenant Id"; Guid)
+        field(1; "Tenant Id"; Guid)
         {
             Caption = 'Tenant Id';
         }
-        field(3; "Customer Name"; Text[100])
+        field(2; "Customer Name"; Text[100])
         {
             Caption = 'Customer Name';
         }
-        field(4; "Extension Id"; Integer)
+        field(3; "Extension Id"; Guid)
         {
             Caption = 'Extension Id';
         }
-        field(5; "Date Created"; DateTime)
+        field(4; "Date Created"; DateTime)
         {
             Caption = 'Date Created';
         }
-        field(6; "Expiration Date"; DateTime)
+        field(5; "Expiration Date"; DateTime)
         {
             Caption = 'Expiration Date';
         }
-        field(7; Status; Text[100])
+        field(6; Status; Text[20])
         {
             Caption = 'Status';
+        }
+        field(7; Signature; Text[64])
+        {
+            Caption = 'Signature';
         }
     }
     keys
     {
-        key(PK; id)
+        key(PK; "Tenant Id", "Extension Id")
         {
             Clustered = true;
         }
     }
+
+    trigger OnInsert()
+    begin
+        ComputeAndSetSignature();
+    end;
+
+    trigger OnModify()
+    begin
+        ComputeAndSetSignature();
+    end;
+
+    local procedure ComputeAndSetSignature()
+    var
+        LicenseCrypto: Codeunit "License Crypto";
+    begin
+        Signature := LicenseCrypto.ComputeHMAC("Tenant Id", "Extension Id", "Date Created", "Expiration Date", Status);
+    end;
 }
