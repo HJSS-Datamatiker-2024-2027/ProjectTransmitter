@@ -4,7 +4,7 @@ page 50201 "License List"
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = License;
-    Editable = false;
+    Editable = true;
 
     layout
     {

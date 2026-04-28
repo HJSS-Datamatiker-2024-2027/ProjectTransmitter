@@ -88,6 +88,7 @@ codeunit 50201 "License API Client"
     local procedure InsertLicense(TenantId: Guid; CustomerName: Text; ExtensionId: Guid; DateCreated: DateTime; ExpirationDate: DateTime; Status: Text)
     var
         License: Record "License";
+        LicenseCrypto: Codeunit "License Crypto";
     begin
         License.Init();
         License."Tenant Id" := TenantId;
@@ -96,7 +97,11 @@ codeunit 50201 "License API Client"
         License."Date Created" := DateCreated;
         License."Expiration Date" := ExpirationDate;
         License.Status := Status;
+        License.Signature := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status);
 
-        License.Insert(true);
+        if not License.Get(TenantId, ExtensionId) then
+            License.Insert(true)
+        else
+            License.Modify(true);
     end;
 }

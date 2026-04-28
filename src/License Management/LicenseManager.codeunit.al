@@ -21,8 +21,10 @@ codeunit 50200 "License Manager"
         //Her mangler alle grace-checks!
         License.Get(TenantId, ExtensionId);
 
-        if not LicenseCrypto.VerifyHMAC(License) then
+        if not LicenseCrypto.VerifyHMAC(License) then begin
+            Message('Signature not matching');
             exit(false);
+        end;
 
         if LicenseAPIClient.GetLicenseStatus(TenantId, ExtensionId) = 'Active' then
             exit(true);

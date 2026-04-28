@@ -41,21 +41,4 @@ table 50200 License
             Clustered = true;
         }
     }
-
-    trigger OnInsert()
-    begin
-        ComputeAndSetSignature();
-    end;
-
-    trigger OnModify()
-    begin
-        ComputeAndSetSignature();
-    end;
-
-    local procedure ComputeAndSetSignature()
-    var
-        LicenseCrypto: Codeunit "License Crypto";
-    begin
-        Signature := LicenseCrypto.ComputeHMAC("Tenant Id", "Extension Id", "Date Created", "Expiration Date", Status);
-    end;
 }
