@@ -1,7 +1,8 @@
 codeunit 50201 "License API Client"
 {
-    procedure GetLicenseStatus(): Boolean
+    procedure GetLicenseStatus(tenantId: Guid; extensionId: Integer): Boolean
     var
+        Url: Text;
         Client: HttpClient;
         RequestMessage: HttpRequestMessage;
         ResponseMessage: HttpResponseMessage;
@@ -16,13 +17,8 @@ codeunit 50201 "License API Client"
         LicenseStatus: Text;
     begin
         RequestMessage.Method := 'GET';
-        //RequestMessage.SetRequestUri('http://host.docker.internal:8080/api/Licenses');
-        //RequestMessage.SetRequestUri('https://jsonplaceholder.typicode.com/todos');
-        RequestMessage.SetRequestUri('https://projectdummysatellite-production.up.railway.app/api/licenses'); // dummy api
-
-        requestMessage.getHeaders(RequestHeaders);
-
-        RequestHeaders.Add('Accept', 'application/json');
+        Url := StrSubstNo('https://projectdummysatellite-production.up.railway.app/api/licenses/%1?tenantId=%2', extensionId, tenantId);
+        RequestMessage.SetRequestUri(Url);
 
         if not Client.Send(RequestMessage, ResponseMessage) then
             Error('HttpRequest was not succesful');
@@ -39,6 +35,7 @@ codeunit 50201 "License API Client"
         else
             Error('Field "status" not found');
 
+        Message(LicenseStatus);
 
         if LicenseStatus = 'Active' then
             exit(true)

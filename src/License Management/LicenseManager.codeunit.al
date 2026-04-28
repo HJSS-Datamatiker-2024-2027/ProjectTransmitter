@@ -13,9 +13,9 @@ codeunit 50200 "License Manager"
     begin
         Message('Status %1', LicenseValid); //temp notification
         LicenseValid := CheckLicense();
+        LicenseAPIClient.GetLicenseStatus('1b81cb10-2baf-4ee4-a63e-f1603c774587', 2);
 
-
-        LicenseAPIClient.GetAllLicenses('1b81cb10-2baf-4ee4-a63e-f1603c774587');
+        //LicenseAPIClient.GetAllLicenses('1b81cb10-2baf-4ee4-a63e-f1603c774587');
     end;
 
     procedure CheckLicense(): Boolean
