@@ -74,7 +74,6 @@ codeunit 50201 "License API Client"
         foreach JToken in JArray do begin
             JObject := JToken.AsObject();
 
-            Id := JObject.SelectToken('id', JToken) ? JToken.AsValue().AsInteger() : -1;
             ReturnedTenantId := JObject.SelectToken('tenantId', JToken) ? JToken.AsValue.AsText() : '';
             CustomerName := JObject.SelectToken('customerName', JToken) ? JToken.AsValue.AsText() : '';
             ExtensionId := JObject.SelectToken('extensionId', JToken) ? JToken.AsValue.AsText() : '';
@@ -82,11 +81,11 @@ codeunit 50201 "License API Client"
             ExpirationDate := JObject.SelectToken('expirationDate', JToken) ? JTOken.AsValue.AsDateTime() : CurrentDateTime();
             Status := JObject.SelectToken('status', JToken) ? JToken.AsValue.AsText() : '';
 
-            InsertLicense(Id, ReturnedTenantId, CustomerName, ExtensionId, DateCreated, ExpirationDate, Status);
+            InsertLicense(ReturnedTenantId, CustomerName, ExtensionId, DateCreated, ExpirationDate, Status);
         end;
     end;
 
-    local procedure InsertLicense(Id: Integer; TenantId: Guid; CustomerName: Text; ExtensionId: Guid; DateCreated: DateTime; ExpirationDate: DateTime; Status: Text)
+    local procedure InsertLicense(TenantId: Guid; CustomerName: Text; ExtensionId: Guid; DateCreated: DateTime; ExpirationDate: DateTime; Status: Text)
     var
         License: Record "License";
     begin

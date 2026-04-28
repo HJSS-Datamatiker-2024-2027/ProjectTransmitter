@@ -31,10 +31,10 @@ page 50200 LicenseStatusPage
 
     trigger OnOpenPage()
     begin
-        // if LicenseManager.CheckLicense('1b81cb10-2baf-4ee4-a63e-f1603c774587', '1b81cb10-2baf-4ee4-a63e-f1603c774587') then
-        //     // if LicenseManager.IsLicenseValid() then
-        //     LicenseStatusTxt := 'Valid'
-        // else
-        //     LicenseStatusTxt := 'Invalid';
+        if LicenseManager.CheckLicense('1b81cb10-2baf-4ee4-a63e-f1603c774587', '1b81cb10-2baf-4ee4-a63e-f1603c774581') then
+            // if LicenseManager.IsLicenseValid() then
+            LicenseStatusTxt := 'Valid'
+        else
+            LicenseStatusTxt := 'Invalid';
     end;
 }
