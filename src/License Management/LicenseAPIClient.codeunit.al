@@ -17,7 +17,7 @@ codeunit 50201 "License API Client"
         LicenseStatus: Text;
     begin
         RequestMessage.Method := 'GET';
-        Url := StrSubstNo('https://projectdummysatellite-production.up.railway.app/api/licenses/%1?tenantId=%2', ExtensionId, TenantId);
+        Url := StrSubstNo('https://satellite-production.up.railway.app/api/licenses/cloud/%1?tenantId=%2', ExtensionId, TenantId);
         RequestMessage.SetRequestUri(Url);
 
         if not Client.Send(RequestMessage, ResponseMessage) then
@@ -60,7 +60,7 @@ codeunit 50201 "License API Client"
 
     begin
         RequestMessage.Method := 'GET';
-        Url := StrSubstNo('https://projectdummysatellite-production.up.railway.app/api/licenses?tenantId=%1', TenantId);
+        Url := StrSubstNo('https://satellite-production.up.railway.app/api/licenses/cloud?tenantId=%1', TenantId);
         RequestMessage.SetRequestUri(Url);
 
         if not Client.Send(RequestMessage, ResponseMessage) then

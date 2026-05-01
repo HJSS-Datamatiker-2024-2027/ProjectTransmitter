@@ -8,9 +8,18 @@ codeunit 50200 "License Manager"
     //[EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
     [EventSubscriber(ObjectType::Page, Page::"Customer List", 'OnOpenPageEvent', '', false, false)]
     local procedure OnLogin()
+    var
+        AzureAdTenant: Codeunit "Azure AD Tenant";
+        ModuleInfo: ModuleInfo;
     begin
-        //LicenseAPIClient.GetAllLicenses('1b81cb10-2baf-4ee4-a63e-f1603c774587');
-        CheckLicense('1b81cb10-2baf-4ee4-a63e-f1603c774587', '1b81cb10-2baf-4ee4-a63e-f1603c774581');
+        NavApp.GetCurrentModuleInfo(ModuleInfo);
+
+        //LicenseAPIClient.GetAllLicenses('44833fc5-b393-4b9f-897a-1f876412ddb1');
+        CheckLicense(AzureAdTenant.GetAadTenantId(), DelChr(ModuleInfo.Id(), '=', '{}').ToLower());
+
+        //Message(DelChr(ModuleInfo.Id(), '=', '{}').ToLower());
+        //Message(ModuleInfo.Id());
+        //Message(AzureAdTenant.GetAadTenantId());
     end;
 
     procedure CheckLicense(TenantId: Guid; ExtensionId: Guid): Boolean
