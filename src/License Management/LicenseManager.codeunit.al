@@ -26,6 +26,7 @@ codeunit 50200 "License Manager"
     var
         License: Record "License";
         LicenseCrypto: Codeunit "License Crypto";
+        LicenseStatus: Text;
     begin
         //Her mangler alle grace-checks!
         License.Get(TenantId, ExtensionId);
@@ -35,11 +36,14 @@ codeunit 50200 "License Manager"
             exit(false);
         end;
 
-        if LicenseAPIClient.GetLicenseStatus(TenantId, ExtensionId) = 'Active' then
-            exit(true);
-
-        if (License.Status = 'Active') and IsWithinGracePeriod(License."Expiration Date") then
-            exit(true);
+        if TryGetLicenseStatus(TenantId, ExtensionId, LicenseStatus) then begin
+            if LicenseStatus = 'Active' then
+                exit(true)
+        end;
+        // Nested if-statement for at undgå crash ved compare "Expiration Date", når den er == 0DT
+        if License.Status = 'Active' then
+            if IsWithinGracePeriod(License."Expiration Date") then
+                exit(true);
 
         exit(false);
     end;
@@ -62,5 +66,11 @@ codeunit 50200 "License Manager"
     begin
         GracePeriodInDays := 7;
         exit(CurrentDateTime() <= (ExpirationDate + (GracePeriodInDays * 24 * 60 * 60 * 1000)));
+    end;
+
+    [TryFunction]
+    local procedure TryGetLicenseStatus(TenantId: Guid; ExtensionId: Guid; var Status: Text)
+    begin
+        Status := LicenseAPIClient.GEtLicenseStatus(TenantId, ExtensionId);
     end;
 }

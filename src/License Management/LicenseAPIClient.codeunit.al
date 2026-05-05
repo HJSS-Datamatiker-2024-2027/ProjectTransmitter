@@ -78,7 +78,7 @@ codeunit 50201 "License API Client"
             CustomerName := JObject.SelectToken('customerName', JToken) ? JToken.AsValue.AsText() : '';
             ExtensionId := JObject.SelectToken('extensionId', JToken) ? JToken.AsValue.AsText() : '';
             DateCreated := JObject.SelectToken('dateCreated', JToken) ? JToken.AsValue.AsDateTime() : CurrentDateTime();
-            ExpirationDate := JObject.SelectToken('expirationDate', JToken) ? JTOken.AsValue.AsDateTime() : CurrentDateTime();
+            ExpirationDate := JObject.SelectToken('expirationDate', JToken) ? JToken.AsValue.AsDateTime() : CurrentDateTime();
             Status := JObject.SelectToken('status', JToken) ? JToken.AsValue.AsText() : '';
 
             InsertLicense(ReturnedTenantId, CustomerName, ExtensionId, DateCreated, ExpirationDate, Status);
