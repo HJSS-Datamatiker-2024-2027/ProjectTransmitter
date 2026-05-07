@@ -16,10 +16,6 @@ codeunit 50200 "License Manager"
 
         //LicenseAPIClient.GetAllLicenses('44833fc5-b393-4b9f-897a-1f876412ddb1');
         CheckLicense(AzureAdTenant.GetAadTenantId(), DelChr(ModuleInfo.Id(), '=', '{}').ToLower());
-
-        //Message(DelChr(ModuleInfo.Id(), '=', '{}').ToLower());
-        //Message(ModuleInfo.Id());
-        //Message(AzureAdTenant.GetAadTenantId());
     end;
 
     procedure CheckLicense(TenantId: Guid; ExtensionId: Guid): Boolean
@@ -45,19 +41,8 @@ codeunit 50200 "License Manager"
             if IsWithinGracePeriod(License."Expiration Date") then
                 exit(true);
 
+        Message('låst');
         exit(false);
-    end;
-
-    local procedure IsOlderThan24Hours(LastCheck: DateTime): Boolean
-    var
-        OneDay: Duration;
-    begin
-        OneDay := 24 * 60 * 60 * 1000;
-
-        if LastCheck = 0DT then
-            LastCheck := CurrentDateTime();
-
-        exit((CurrentDateTime() - LastCheck) > OneDay);
     end;
 
     local procedure IsWithinGracePeriod(ExpirationDate: DateTime): Boolean
@@ -71,6 +56,6 @@ codeunit 50200 "License Manager"
     [TryFunction]
     local procedure TryGetLicenseStatus(TenantId: Guid; ExtensionId: Guid; var Status: Text)
     begin
-        Status := LicenseAPIClient.GEtLicenseStatus(TenantId, ExtensionId);
+        Status := LicenseAPIClient.GetLicenseStatus(TenantId, ExtensionId);
     end;
 }

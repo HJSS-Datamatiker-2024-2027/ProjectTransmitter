@@ -89,8 +89,12 @@ codeunit 50201 "License API Client"
     var
         License: Record "License";
         LicenseCrypto: Codeunit "License Crypto";
+        IsNew: Boolean;
     begin
-        License.Init();
+        IsNew := not License.Get(TenantId, ExtensionId);
+        if IsNew then
+            License.Init();
+
         License."Tenant Id" := TenantId;
         License."Customer Name" := CustomerName;
         License."Extension Id" := ExtensionId;
@@ -99,7 +103,7 @@ codeunit 50201 "License API Client"
         License.Status := Status;
         License.Signature := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status);
 
-        if not License.Get(TenantId, ExtensionId) then
+        if IsNew then
             License.Insert(true)
         else
             License.Modify(true);

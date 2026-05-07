@@ -1,4 +1,4 @@
-page 50201 "License List"
+page 50200 "License List"
 {
     PageType = List;
     ApplicationArea = All;
