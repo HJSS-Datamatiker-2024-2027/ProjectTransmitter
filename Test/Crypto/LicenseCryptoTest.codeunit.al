@@ -1,6 +1,7 @@
 codeunit 50205 "License Crypto Test"
 {
     Subtype = Test;
+    Access = Internal;
 
     var
         TestLibrary: Codeunit "License Test Library";
@@ -20,7 +21,7 @@ codeunit 50205 "License Crypto Test"
         LicenseRecord := TestLibrary.CreateSignedLicenseRecord(LicenseCrypto);
 
         // [WHEN] When VerifyHMAC Is Called
-        Result := LicenseCrypto.VerifyHMAC(LicenseRecord);
+        Result := LicenseCrypto.VerifyHMAC(LicenseRecord, TestLibrary.GetSecretProvider());
 
         // [THEN] Then Returns True
         if not Result then
@@ -38,7 +39,7 @@ codeunit 50205 "License Crypto Test"
         LicenseRecord.Status := 'Pending';
 
         // [WHEN] When VerifyHMAC Is Called
-        Result := LicenseCrypto.VerifyHMAC(LicenseRecord);
+        Result := LicenseCrypto.VerifyHMAC(LicenseRecord, TestLibrary.GetSecretProvider());
 
         // [THEN] Then Returns False 
         if Result then
@@ -56,7 +57,7 @@ codeunit 50205 "License Crypto Test"
         LicenseRecord."Expiration Date" := CurrentDateTime();
 
         // [WHEN] When VerifyHMAC Is Called
-        Result := LicenseCrypto.VerifyHMAC(LicenseRecord);
+        Result := LicenseCrypto.VerifyHMAC(LicenseRecord, TestLibrary.GetSecretProvider());
 
         // [THEN] Then Return False 
         if Result then
@@ -74,7 +75,7 @@ codeunit 50205 "License Crypto Test"
         LicenseRecord.Signature := '';
 
         // [WHEN] When VerifyHMAC Is Called 
-        Result := LicenseCrypto.VerifyHMAC(LicenseRecord);
+        Result := LicenseCrypto.VerifyHMAC(LicenseRecord, TestLibrary.GetSecretProvider());
 
         // [THEN] Then Returns False 
         if Result then
@@ -100,7 +101,8 @@ codeunit 50205 "License Crypto Test"
             LicenseRecord."Extension Id",
             LicenseRecord."Date Created",
             LicenseRecord."Expiration Date",
-            LicenseRecord.Status
+            LicenseRecord.Status,
+            TestLibrary.GetSecretProvider()
         );
 
         // [THEN] Then Returns Non Empty Hash 
@@ -127,8 +129,8 @@ codeunit 50205 "License Crypto Test"
         Status := 'Active';
 
         // [WHEN] ComputeHMAC Is Called 
-        Result1 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status);
-        Result2 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status);
+        Result1 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status, TestLibrary.GetSecretProvider());
+        Result2 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status, TestLibrary.GetSecretProvider());
 
         // [THEN] Then Returns Same Hash 
         if Result1 <> Result2 then
@@ -151,8 +153,8 @@ codeunit 50205 "License Crypto Test"
         ExpirationDate := CreateDateTime(CalcDate('<+7D>', Today()), Time());
 
         // [WHEN] When ComputeHMAC Is Called 
-        Result1 := LicenseCrypto.ComputeHMAC(CreateGuid(), ExtensionId, DateCreated, ExpirationDate, Status);
-        Result2 := LicenseCrypto.ComputeHMAC(CreateGuid(), ExtensionId, DateCreated, ExpirationDate, Status);
+        Result1 := LicenseCrypto.ComputeHMAC(CreateGuid(), ExtensionId, DateCreated, ExpirationDate, Status, TestLibrary.GetSecretProvider());
+        Result2 := LicenseCrypto.ComputeHMAC(CreateGuid(), ExtensionId, DateCreated, ExpirationDate, Status, TestLibrary.GetSecretProvider());
 
         // [THEN] Then Returns Different Hash 
         if Result1 = Result2 then
@@ -180,8 +182,8 @@ codeunit 50205 "License Crypto Test"
         Status2 := 'Active';
 
         // [WHEN] When ComputeHMAC Is Called 
-        Result1 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status1);
-        Result2 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status2);
+        Result1 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status1, TestLibrary.GetSecretProvider());
+        Result2 := LicenseCrypto.ComputeHMAC(TenantId, ExtensionId, DateCreated, ExpirationDate, Status2, TestLibrary.GetSecretProvider());
 
         // [THEN] Then Returns Different Hashes 
         if Result1 = Result2 then

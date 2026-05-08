@@ -2,6 +2,19 @@ codeunit 50204 "License Test Library"
 {
     Access = Internal;
 
+    var
+        MockSecretProvider: Codeunit "Mock Secret Provider";
+
+    procedure Initialize()
+    begin
+        MockSecretProvider.SetSecret('test-secret');
+    end;
+
+    procedure GetSecretProvider(): Interface "Secret Provider"
+    begin
+        exit(MockSecretProvider);
+    end;
+
     procedure CreateLicenseRecord(): Record License
     var
         LicenseRecord: Record License;
@@ -36,7 +49,8 @@ codeunit 50204 "License Test Library"
             LicenseRecord."Extension Id",
             LicenseREcord."Date Created",
             LicenseRecord."Expiration Date",
-            LicenseRecord.Status
+            LicenseRecord.Status,
+            MockSecretProvider
         );
 
         exit(LicenseRecord);

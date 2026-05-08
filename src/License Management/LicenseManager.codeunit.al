@@ -22,12 +22,13 @@ codeunit 50200 "License Manager"
     var
         License: Record "License";
         LicenseCrypto: Codeunit "License Crypto";
+        APISecretProvider: Codeunit "API Secret Provider";
         LicenseStatus: Text;
     begin
         //Her mangler alle grace-checks!
         License.Get(TenantId, ExtensionId);
 
-        if not LicenseCrypto.VerifyHMAC(License) then begin
+        if not LicenseCrypto.VerifyHMAC(License, APISecretProvider) then begin
             Message('Signature not matching');
             exit(false);
         end;
