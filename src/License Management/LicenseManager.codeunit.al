@@ -4,8 +4,6 @@ codeunit 50200 "License Manager"
 
     var
         LicenseAPIClient: Codeunit "License API Client";
-
-    //[EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", 'OnAfterLogin', '', false, false)]
     [EventSubscriber(ObjectType::Page, Page::"Customer List", 'OnOpenPageEvent', '', false, false)]
     local procedure OnLogin()
     var
@@ -14,7 +12,6 @@ codeunit 50200 "License Manager"
     begin
         NavApp.GetCurrentModuleInfo(ModuleInfo);
 
-        //LicenseAPIClient.GetAllLicenses('44833fc5-b393-4b9f-897a-1f876412ddb1');
         CheckLicense(AzureAdTenant.GetAadTenantId(), DelChr(ModuleInfo.Id(), '=', '{}').ToLower());
     end;
 
@@ -25,7 +22,6 @@ codeunit 50200 "License Manager"
         APISecretProvider: Codeunit "API Secret Provider";
         LicenseStatus: Text;
     begin
-        //Her mangler alle grace-checks!
         License.Get(TenantId, ExtensionId);
 
         if not LicenseCrypto.VerifyHMAC(License, APISecretProvider) then begin
@@ -37,7 +33,6 @@ codeunit 50200 "License Manager"
             if LicenseStatus = 'Active' then
                 exit(true)
         end;
-        // Nested if-statement for at undgå crash ved compare "Expiration Date", når den er == 0DT
         if License.Status = 'Active' then
             if IsWithinGracePeriod(License."Expiration Date") then
                 exit(true);
